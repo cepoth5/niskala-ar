@@ -2,20 +2,61 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Camera</title>
+  <title>Niskala AR - MindAR</title>
+
+  <script src="https://unpkg.com/three@0.150.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/mind-ar/dist/mindar-image-three.prod.js"></script>
+  <script src="https://unpkg.com/three@0.150.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #startBtn {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 16px 24px;
+      font-size: 18px;
+      z-index: 999;
+      border-radius: 12px;
+      border: none;
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>Kamera Test</h2>
-<video id="video" autoplay playsinline style="width:100%"></video>
+<button id="startBtn">🚀 Start AR</button>
 
 <script>
-navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-.then(stream => {
-  document.getElementById("video").srcObject = stream;
-})
-.catch(err => {
-  alert("ERROR: " + err.message);
+document.getElementById("startBtn").addEventListener("click", async () => {
+
+  document.getElementById("startBtn").style.display = "none";
+
+  const mindarThree = new window.MINDAR.IMAGE.MindARThree({
+    container: document.body,
+    imageTargetSrc: "./targets.mind",
+  });
+
+  const { renderer, scene, camera } = mindarThree;
+
+  const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+  scene.add(light);
+
+  const anchor = mindarThree.addAnchor(0);
+
+  const loader = new THREE.GLTFLoader();
+  loader.load("./model.glb", (gltf) => {
+    gltf.scene.scale.set(0.5, 0.5, 0.5);
+    anchor.group.add(gltf.scene);
+  });
+
+  await mindarThree.start();
+
+  renderer.setAnimationLoop(() => {
+    renderer.render(scene, camera);
+  });
+
 });
 </script>
 
