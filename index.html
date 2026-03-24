@@ -2,10 +2,9 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Niskala AR Step 2</title>
+  <title>Fix Test</title>
 
   <script src="https://unpkg.com/three@0.150.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.150.0/examples/js/loaders/GLTFLoader.js"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
@@ -22,6 +21,7 @@
       position: fixed;
       top: 0;
       left: 0;
+      z-index: 1; /* 🔥 PENTING */
     }
 
     #btn {
@@ -29,10 +29,7 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      padding: 14px 20px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: none;
+      padding: 14px;
       z-index: 10;
     }
   </style>
@@ -40,7 +37,7 @@
 
 <body>
 
-<button id="btn">🚀 START</button>
+<button id="btn">START</button>
 <video id="video" autoplay playsinline></video>
 
 <script>
@@ -70,38 +67,14 @@ document.getElementById("btn").onclick = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-  scene.add(light);
-
-  // 🟢 CUBE (backup visual)
+  // 🔥 TEST OBJECT
   const cube = new THREE.Mesh(
     new THREE.BoxGeometry(0.5, 0.5, 0.5),
-    new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+    new THREE.MeshBasicMaterial({ color: 0xff0000 })
   );
-  cube.position.set(-0.7, 0, -1);
+
+  cube.position.set(0, 0, -1);
   scene.add(cube);
-
-  // 📦 LOAD MODEL
-  const loader = new THREE.GLTFLoader();
-
-  loader.load(
-    "model.glb",
-    (gltf) => {
-      const model = gltf.scene;
-
-      model.scale.set(2, 2, 2);        // BESARIN
-      model.position.set(0.7, 0, -1);  // SEBELAH CUBE
-
-      scene.add(model);
-
-      console.log("MODEL MUNCUL 🔥");
-    },
-    undefined,
-    (error) => {
-      console.error(error);
-      alert("Model gagal load!");
-    }
-  );
 
   function animate() {
     requestAnimationFrame(animate);
