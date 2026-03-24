@@ -2,27 +2,21 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Niskala AR Final</title>
+  <title>Niskala Fix</title>
 
   <script src="https://unpkg.com/three@0.150.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.150.0/examples/js/loaders/GLTFLoader.js"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
 
-    video {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -1;
-    }
-
-    canvas {
+    #video {
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
     }
 
     #btn {
@@ -31,7 +25,7 @@
       left: 50%;
       transform: translateX(-50%);
       padding: 14px;
-      z-index: 10;
+      z-index: 3;
     }
   </style>
 </head>
@@ -46,13 +40,16 @@ document.getElementById("btn").onclick = () => {
 
   document.getElementById("btn").style.display = "none";
 
+  const video = document.getElementById("video");
+
   navigator.mediaDevices.getUserMedia({
     video: { facingMode: "environment" }
   })
   .then(stream => {
-    document.getElementById("video").srcObject = stream;
+    video.srcObject = stream;
   });
 
+  // 🎮 THREE
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
@@ -65,45 +62,25 @@ document.getElementById("btn").onclick = () => {
   camera.position.z = 2;
 
   const renderer = new THREE.WebGLRenderer({ alpha: true });
+
   renderer.setSize(window.innerWidth, window.innerHeight);
+
+  // 🔥 PAKSA CANVAS DI ATAS VIDEO
+  renderer.domElement.style.position = "fixed";
+  renderer.domElement.style.top = "0";
+  renderer.domElement.style.left = "0";
+  renderer.domElement.style.zIndex = "2";
+
   document.body.appendChild(renderer.domElement);
 
-  const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-  scene.add(light);
-
-  // 🟢 CUBE (backup)
+  // 🟢 TEST OBJECT (WAJIB MUNCUL)
   const cube = new THREE.Mesh(
     new THREE.BoxGeometry(0.5, 0.5, 0.5),
-    new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    new THREE.MeshBasicMaterial({ color: 0x00ff00 })
   );
-  cube.position.set(-0.6, 0, -1);
+
+  cube.position.set(0, 0, -1);
   scene.add(cube);
-
-  // 🔥 LOAD MODEL (SAFE)
-  const loader = new THREE.GLTFLoader();
-
-  loader.load(
-    "model.glb",
-    (gltf) => {
-      try {
-        const model = gltf.scene;
-
-        model.scale.set(2, 2, 2);
-        model.position.set(0.6, 0, -1);
-
-        scene.add(model);
-
-        console.log("MODEL MUNCUL 🔥");
-      } catch (e) {
-        console.error("MODEL ERROR:", e);
-      }
-    },
-    undefined,
-    (error) => {
-      console.error("LOAD ERROR:", error);
-      alert("Model gagal load");
-    }
-  );
 
   function animate() {
     requestAnimationFrame(animate);
