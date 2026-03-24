@@ -2,9 +2,10 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Niskala Basic AR</title>
+  <title>Niskala AR Step 2</title>
 
   <script src="https://unpkg.com/three@0.150.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.150.0/examples/js/loaders/GLTFLoader.js"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
@@ -47,7 +48,6 @@ document.getElementById("btn").onclick = () => {
 
   document.getElementById("btn").style.display = "none";
 
-  // 🎥 AKTIFKAN KAMERA
   navigator.mediaDevices.getUserMedia({
     video: { facingMode: "environment" }
   })
@@ -55,7 +55,6 @@ document.getElementById("btn").onclick = () => {
     document.getElementById("video").srcObject = stream;
   });
 
-  // 🎮 THREE SCENE
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
@@ -71,25 +70,43 @@ document.getElementById("btn").onclick = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  // 💡 LIGHT
   const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
   scene.add(light);
 
-  // 🟢 OBJEK PASTI MUNCUL (CUBE)
-  const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  const cube = new THREE.Mesh(geometry, material);
-
-  // posisi DI DEPAN kamera
-  cube.position.set(0, 0, -1);
-
+  // 🟢 CUBE (backup visual)
+  const cube = new THREE.Mesh(
+    new THREE.BoxGeometry(0.5, 0.5, 0.5),
+    new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+  );
+  cube.position.set(-0.7, 0, -1);
   scene.add(cube);
 
-  // 🔁 LOOP
+  // 📦 LOAD MODEL
+  const loader = new THREE.GLTFLoader();
+
+  loader.load(
+    "model.glb",
+    (gltf) => {
+      const model = gltf.scene;
+
+      model.scale.set(2, 2, 2);        // BESARIN
+      model.position.set(0.7, 0, -1);  // SEBELAH CUBE
+
+      scene.add(model);
+
+      console.log("MODEL MUNCUL 🔥");
+    },
+    undefined,
+    (error) => {
+      console.error(error);
+      alert("Model gagal load!");
+    }
+  );
+
   function animate() {
     requestAnimationFrame(animate);
 
-    cube.rotation.y += 0.02; // biar muter
+    cube.rotation.y += 0.02;
 
     renderer.render(scene, camera);
   }
