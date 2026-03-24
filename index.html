@@ -2,17 +2,16 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Niskala Fix</title>
+  <title>Niskala AR Trigger</title>
 
   <script src="https://unpkg.com/three@0.150.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.150.0/examples/js/loaders/GLTFLoader.js"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
 
     #video {
       position: fixed;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -36,6 +35,9 @@
 <video id="video" autoplay playsinline></video>
 
 <script>
+let model = null;
+let scene, camera, renderer;
+
 document.getElementById("btn").onclick = () => {
 
   document.getElementById("btn").style.display = "none";
@@ -49,10 +51,10 @@ document.getElementById("btn").onclick = () => {
     video.srcObject = stream;
   });
 
-  // 🎮 THREE
-  const scene = new THREE.Scene();
+  // SCENE
+  scene = new THREE.Scene();
 
-  const camera = new THREE.PerspectiveCamera(
+  camera = new THREE.PerspectiveCamera(
     70,
     window.innerWidth / window.innerHeight,
     0.01,
@@ -61,31 +63,44 @@ document.getElementById("btn").onclick = () => {
 
   camera.position.z = 2;
 
-  const renderer = new THREE.WebGLRenderer({ alpha: true });
-
+  renderer = new THREE.WebGLRenderer({ alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-  // 🔥 PAKSA CANVAS DI ATAS VIDEO
   renderer.domElement.style.position = "fixed";
-  renderer.domElement.style.top = "0";
-  renderer.domElement.style.left = "0";
   renderer.domElement.style.zIndex = "2";
 
   document.body.appendChild(renderer.domElement);
 
-  // 🟢 TEST OBJECT (WAJIB MUNCUL)
+  // CUBE (backup)
   const cube = new THREE.Mesh(
     new THREE.BoxGeometry(0.5, 0.5, 0.5),
     new THREE.MeshBasicMaterial({ color: 0x00ff00 })
   );
-
   cube.position.set(0, 0, -1);
   scene.add(cube);
 
+  // LOAD MODEL (TAPI BELUM DITAMPILKAN)
+  const loader = new THREE.GLTFLoader();
+
+  loader.load("model.glb", (gltf) => {
+    model = gltf.scene;
+
+    model.scale.set(2,2,2);
+    model.position.set(0, 0, -1);
+
+    console.log("MODEL READY 🔥");
+  });
+
+  // TAP UNTUK MUNCULKAN MODEL
+  window.addEventListener("click", () => {
+    if (model && !scene.children.includes(model)) {
+      scene.add(model);
+      console.log("MODEL DIMUNCULKAN 🚀");
+    }
+  });
+
   function animate() {
     requestAnimationFrame(animate);
-
-    cube.rotation.y += 0.02;
 
     renderer.render(scene, camera);
   }
