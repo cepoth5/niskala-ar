@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Niskala AR Simple</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Niskala AR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- AFRAME -->
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
@@ -13,54 +13,48 @@
 
   <style>
     body { margin: 0; overflow: hidden; }
-    button {
+    #startBtn {
       position: fixed;
-      bottom: 20px;
+      top: 40%;
       left: 50%;
-      transform: translateX(-50%);
-      padding: 12px 20px;
-      font-size: 16px;
+      transform: translate(-50%, -50%);
+      padding: 16px 24px;
+      font-size: 18px;
       z-index: 999;
+      border-radius: 12px;
+      border: none;
     }
   </style>
 </head>
 
 <body>
 
-<!-- SCENE -->
-<a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+<button id="startBtn">🚀 Start AR</button>
 
-  <!-- MARKER -->
+<a-scene
+  id="scene"
+  embedded
+  arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
+  vr-mode-ui="enabled: false"
+  renderer="logarithmicDepthBuffer: true;"
+  style="display:none;">
+
   <a-marker preset="hiro">
-    
-    <!-- MODEL -->
     <a-entity
       gltf-model="model.glb"
       scale="0.5 0.5 0.5"
       position="0 0 0">
     </a-entity>
-
   </a-marker>
 
   <a-entity camera></a-entity>
 </a-scene>
 
-<button onclick="capture()">📸 Capture</button>
-
 <script>
-function capture() {
-  const canvas = document.querySelector("canvas");
-  if (!canvas) return alert("Belum siap!");
-
-  const img = canvas.toDataURL("image/png");
-
-  const a = document.createElement("a");
-  a.href = img;
-  a.download = "capture.png";
-  a.click();
-
-  alert("Capture berhasil!");
-}
+document.getElementById("startBtn").addEventListener("click", () => {
+  document.getElementById("startBtn").style.display = "none";
+  document.getElementById("scene").style.display = "block";
+});
 </script>
 
 </body>
