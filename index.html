@@ -1,59 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Niskala AR</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- AFRAME -->
-  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-
-  <!-- ARJS -->
-  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
-
-  <style>
-    body { margin: 0; overflow: hidden; }
-    #startBtn {
-      position: fixed;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 16px 24px;
-      font-size: 18px;
-      z-index: 999;
-      border-radius: 12px;
-      border: none;
-    }
-  </style>
+  <title>Test Camera</title>
 </head>
-
 <body>
 
-<button id="startBtn">🚀 Start AR</button>
-
-<a-scene
-  id="scene"
-  embedded
-  arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
-  vr-mode-ui="enabled: false"
-  renderer="logarithmicDepthBuffer: true;"
-  style="display:none;">
-
-  <a-marker preset="hiro">
-    <a-entity
-      gltf-model="model.glb"
-      scale="0.5 0.5 0.5"
-      position="0 0 0">
-    </a-entity>
-  </a-marker>
-
-  <a-entity camera></a-entity>
-</a-scene>
+<h2>Kamera Test</h2>
+<video id="video" autoplay playsinline style="width:100%"></video>
 
 <script>
-document.getElementById("startBtn").addEventListener("click", () => {
-  document.getElementById("startBtn").style.display = "none";
-  document.getElementById("scene").style.display = "block";
+navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+.then(stream => {
+  document.getElementById("video").srcObject = stream;
+})
+.catch(err => {
+  alert("ERROR: " + err.message);
 });
 </script>
 
