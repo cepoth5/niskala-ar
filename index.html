@@ -2,9 +2,10 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fix Test</title>
+  <title>Niskala AR Final</title>
 
   <script src="https://unpkg.com/three@0.150.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.150.0/examples/js/loaders/GLTFLoader.js"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
@@ -21,7 +22,7 @@
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 1; /* 🔥 PENTING */
+      z-index: 1;
     }
 
     #btn {
@@ -67,14 +68,42 @@ document.getElementById("btn").onclick = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  // 🔥 TEST OBJECT
+  const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+  scene.add(light);
+
+  // 🟢 CUBE (backup)
   const cube = new THREE.Mesh(
     new THREE.BoxGeometry(0.5, 0.5, 0.5),
     new THREE.MeshBasicMaterial({ color: 0xff0000 })
   );
-
-  cube.position.set(0, 0, -1);
+  cube.position.set(-0.6, 0, -1);
   scene.add(cube);
+
+  // 🔥 LOAD MODEL (SAFE)
+  const loader = new THREE.GLTFLoader();
+
+  loader.load(
+    "model.glb",
+    (gltf) => {
+      try {
+        const model = gltf.scene;
+
+        model.scale.set(2, 2, 2);
+        model.position.set(0.6, 0, -1);
+
+        scene.add(model);
+
+        console.log("MODEL MUNCUL 🔥");
+      } catch (e) {
+        console.error("MODEL ERROR:", e);
+      }
+    },
+    undefined,
+    (error) => {
+      console.error("LOAD ERROR:", error);
+      alert("Model gagal load");
+    }
+  );
 
   function animate() {
     requestAnimationFrame(animate);
